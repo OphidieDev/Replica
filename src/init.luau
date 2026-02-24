@@ -1,5 +1,8 @@
 local RunService = game:GetService("RunService")
 
+export type ReplicaServer = typeof(require(script.ReplicaServer))
+export type ReplicaClient = typeof(require(script.ReplicaClient))
+
 if RunService:IsServer() then
 	return require(script.ReplicaServer)
 else
