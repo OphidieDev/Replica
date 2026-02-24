@@ -1,0 +1,28 @@
+name = "ophidiedev/replica"
+version = "0.1.0"
+authors = ["Ophidie (https://github.com/OphidieDev)", "Loleris (https://github.com/LM-loleris)"]
+description = "Roblox server to client state replication solution which lets the developer subscribe certain players to certain states. Originally made by loleris"
+repository = "https://github.com/OphidieDev/replica"
+license = "Apache-2.0"
+includes = [
+  "pesde.toml",
+  "README.md",
+  "LICENSE",
+  "src/**/*.luau",
+]
+
+[target]
+environment = "roblox"
+lib = "src/init.luau"
+build_files = ["src"]
+
+[indices]
+default = "https://github.com/pesde-pkg/index"
+
+[scripts]
+roblox_sync_config_generator = ".pesde/scripts/roblox_sync_config_generator.luau"
+sourcemap_generator = ".pesde/scripts/sourcemap_generator.luau"
+
+[dev_dependencies]
+scripts = { name = "pesde/scripts_rojo", version = "^0.1.0", target = "lune" }
+rojo = { name = "pesde/rojo", version = "^7.4.4", target = "lune" }
