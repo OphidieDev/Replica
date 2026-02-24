@@ -1,0 +1,34 @@
+{
+  "name": "@rbxts/loleris-replica",
+  "version": "0.1.0",
+  "description": "Roblox server to client state replication solution which lets the developer subscribe certain players to certain states. Originally made by loleris",
+  "main": "src/init.luau",
+  "types": "src/index.d.ts",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OphidieDev/Replica.git"
+  },
+  "author": "ophidie",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/OphidieDev/Replica/issues"
+  },
+  "homepage": "https://github.com/OphidieDev/Replica#readme",
+  "files": [
+    "src/**/*",
+    "!src/**/*.spec.{luau,ts}",
+    "default.project.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@rbxts/compiler-types": "^3.0.0-types.0",
+    "@rbxts/types": "^1.0.813",
+    "roblox-ts": "^3.0.0",
+    "typescript": "^5.6.3"
+  }
+}
