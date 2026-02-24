@@ -8,65 +8,63 @@ MAD STUDIO
 	WARNING: Avoid numeric tables with gaps & non string/numeric keys - They can't be replicated!
 
 	Members:
-
-		Replica.ReadyPlayers          [table] -- (read-only) {[player] = true, ...}
-		Replica.NewReadyPlayer        [Signal] (player)
-		Replica.RemovingReadyPlayer   [Signal] (player)
-
+	
+		Replica.ReadyPlayers:        {[Player]: true}
+		Replica.NewReadyPlayer:      Signal<Player>
+		Replica.RemovingReadyPlayer: Signal<Player>
+	
 	Functions:
-
-		Replica.Token(token_string) --> [ReplicaToken] -- Only one token object can be created for each unique "token_string"
-
-		Replica.New(params) --> [Replica]
-			params   [table]:
-				{
-					Token = [ReplicaToken],
+	
+		Replica.Token(token: string): ReplicaToken -- Only one token object can be created for each unique "token: string"
+	
+		Replica.New(params): Replica
+			params: {
+					Token: ReplicaToken,
 					-- Optional:
-					Tags = {}, -- Immutable dictionary meant for identifying the Replica (e.g. UserId = 2312310)
-					Data = {}, -- Initial replica state
-					WriteLib = ModuleScript,
+					Tags: {}?, -- Immutable dictionary meant for identifying the Replica (e.g. UserId = 2312310)
+					Data: {}?, -- Initial replica state
+					WriteLib: ModuleScript?,
 				}
-
-		Replica.FromId(id) --> [Replica] or nil
-
+		
+		Replica.FromId(id: number): Replica?
+		
 	Members [Replica]:
-
-		Replica.Tags             [table] Secondary Replica identifiers
-		Replica.Data             [table] (Read only) Table which is replicated
-
-		Replica.Id               [number] Unique identifier
-		Replica.Token            [string] Primary Replica identifier
-
-		Replica.Parent           [Replica] or nil
-		Replica.Children         [table]: {[replica] = true, ...}
-
-		Replica.BoundInstance    [Instance] or nil
-
-		Replica.OnServerEvent    [Signal] (player, ...)
-
-		Replica.Maid             [Maid]
-
+	
+		Replica.Tags:          {} -- Secondary Replica identifiers; Can only be set on creation
+		Replica.Data:          {} -- Table which is replicated; Can only be written to through setter methods server-side
+		
+		Replica.Id:            number -- Unique identifier
+		Replica.Token:         string -- Primary Replica identifier
+		
+		Replica.Parent:        Replica?
+		Replica.Children:      {[Replica]: true}
+		
+		Replica.BoundInstance: Instance?
+		
+		Replica.OnServerEvent: Signal<Player, ...>
+		
+		Replica.Maid:          Maid?
+	
 	Methods [Component]:
-
-		-- [path]: {"Players", 2312310, "Health"} -- A path defines a key branch within Replica.Data
-
-		Replica:Set(path, value)
-		Replica:SetValues(path, values)
-			values   [table]: {key = value, ...}
-
-		Replica:TableInsert(path, value, index?) --> new_index -- Performs table.insert(path, value)
-		Replica:TableRemove(path, index) --> removed_value -- Performs table.remove(path, index)
-
-		Replica:Write(function_name, ...) --> ... -- Run WriteLib function with given parameters
-
-		Replica:FireClient(player, ...) -- Will not replicate to unsubscribed players
+	
+		-- (EXAMPLE) path: {"Players", "2312310", "Health"} -- A path defines a key branch within Replica.Data
+	
+		Replica:Set(path: {string | number}, value: any)
+		Replica:SetValues(path: {string | number}, values: {[string]: any})
+			
+		Replica:TableInsert(path: {string | number}, value: any, index: number?): number (new index) -- Performs table.insert(path, value)
+		Replica:TableRemove(path: {string | number}, index: number): any (removed value) -- Performs table.remove(path, index)
+		
+		Replica:Write(function_name: string, ...): ... -- Run WriteLib function with given parameters
+		
+		Replica:FireClient(player: Player, ...) -- Will not replicate to unsubscribed players
 		Replica:FireAllClients(...) -- Will not replicate to unsubscribed players
-		Replica:UFireClient(player, ...) -- Same as "Replica:FireClient()", but using UnreliableRemoteEvent
+		Replica:UFireClient(player: Player, ...) -- Same as "Replica:FireClient()", but using UnreliableRemoteEvent
 		Replica:UFireAllClients(...) -- Same as "Replica:FireAllClients()", but using UnreliableRemoteEvent
-
-		Replica:SetParent(replica) -- Replication will be inherited from parent replica; Replication and bind methods will be locked.
-
-		Replica:BindToInstance(instance) -- Players who observe the instance stream in
+		
+		Replica:SetParent(replica: Replica) -- Replication will be inherited from parent replica; Replication and bind methods will be locked.
+		
+		Replica:BindToInstance(instance: Instance) -- Players who observe the instance stream in
 			-- will be subscribed to this component; Observing the instance stream out
 			-- will destroy the component for the observing player; Replicas should be bound
 			-- to instances first and then ":Replicate()" or ":Subscribe()" should be called
@@ -76,11 +74,11 @@ MAD STUDIO
 		Replica:DontReplicate() -- Resets all previous subscription settings;
 		Replica:Subscribe(player) -- Replicates to player; WILL NOT subscribe to players that are not ready & will throw a warning for trying to do so.
 		Replica:Unsubscribe(player) -- Destroys Replica for player
+		
+		Replica:Identify(): string -- Debug
 
-		Replica:Identify() --> [string] -- Debug
-
-		Replica:IsActive() --> [bool]
-
+		Replica:IsActive(): boolean
+		
 		Replica:Destroy() -- Destroys replica and all of its descendants (Depth-first)
 
 --]]
@@ -109,10 +107,10 @@ local GlobalRateLimit = RateLimit.New(120)
 
 local ReadyPlayers: { [Player]: boolean } = {}
 
-local Replicas = {} -- [id] = Replica, ...
-local TopReplicas = {} -- [Replica] = true, ... -- Replicas with active subsciption settings
-local ReplicationAllReplicas = {} -- [Replica] = true, ... -- Replicas that had the method :Replicate() called on them
-local SelectiveSubscriptions = {} -- [Player] = {[replica] = true, ...}
+local Replicas = {} -- {[id]: Replica}
+local TopReplicas = {} -- {[Replica]: true} -- Replicas with active subscription settings
+local ReplicationAllReplicas = {} -- {[Replica]: true} -- Replicas that had the method :Replicate() called on them
+local SelectiveSubscriptions = {} -- {[Player]: {[replica]: true}}
 
 local RemoteRequestData = Remote.New("ReplicaRequestData") -- Fired client-side when the client loads for the first time
 
@@ -669,7 +667,7 @@ function Replica:BindToInstance(instance: Instance)
 	end
 
 	if instance:IsA("Model") == true and (instance.ModelStreamingMode == Enum.ModelStreamingMode.Default or instance.ModelStreamingMode == Enum.ModelStreamingMode.Nonatomic) then
-		warn(`[{script.Name}]: Bound Replica to a model that has inproper "ModelStreamingMode" setup; Traceback:\n` .. debug.traceback())
+		warn(`[{script.Name}]: Bound Replica to a model that has improper "ModelStreamingMode" setup; Traceback:\n` .. debug.traceback())
 	end
 
 	local bind_value = BindValuePrefab:Clone()
@@ -811,7 +809,7 @@ function Replica:Identify(): string
 		tag_string ..= `{if first_tag == true then "" else ";"}{tostring(key)}={tostring(value)}`
 		first_tag = false
 	end
-	return `[Id:{self.Id};Token:{self.Token};Tags:\{{tag_string}\}]`
+	return `[Id:{self.Id};Token:{self.Token};Tags:[{tag_string}]]`
 end
 
 function Replica:IsActive(): boolean
@@ -913,8 +911,8 @@ RemoteRequestData.OnServerEvent:Connect(function(player: Player)
 	end
 
 	-- Make the client create all replicas that are initially replicated to the client;
-	-- Pack up and send intially replicated replicas:
-
+	-- Pack up and send initially replicated replicas:
+	
 	local creation = {}
 
 	for replica in pairs(ReplicationAllReplicas) do
