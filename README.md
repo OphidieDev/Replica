@@ -28,12 +28,12 @@
 ## Installation
 Add to your `wally.toml`:
 ```toml
-utf8_validate = "ophidiedev/replica@0.1.0"
+replica = "ophidiedev/replica@0.1.0"
 ```
 
 Add to your `pesde.toml`:
 ```toml
-utf8_validate = { name = "ophidiedev/replica", version = "^0.1.0" }
+replica = { name = "ophidiedev/replica", version = "^0.1.0" }
 ```
 
 Add to your `package.json`:
