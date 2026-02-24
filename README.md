@@ -28,17 +28,17 @@
 ## Installation
 Add to your `wally.toml`:
 ```toml
-replica = "ophidiedev/replica@0.1.0"
+replica = "ophidiedev/replica@0.2.0"
 ```
 
 Add to your `pesde.toml`:
 ```toml
-replica = { name = "ophidiedev/replica", version = "^0.1.0" }
+replica = { name = "ophidiedev/replica", version = "^0.2.0" }
 ```
 
 Add to your `package.json`:
 ```json
-"@rbxts/loleris-replica": "^0.1.0"
+"@rbxts/loleris-replica": "^0.2.0"
 ```
 
 ## Changes
