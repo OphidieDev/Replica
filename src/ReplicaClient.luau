@@ -221,6 +221,7 @@ end
 local Replica = {
 	IsReady = false,
 	OnLocalReady = Signal.New(),
+	default = nil
 }
 Replica.__index = Replica
 

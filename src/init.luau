@@ -4,12 +4,17 @@ export type ReplicaServer = typeof(require(script.ReplicaServer))
 export type ReplicaClient = typeof(require(script.ReplicaClient))
 
 if RunService:IsServer() then
-	return require(script.ReplicaServer)
+	local Replica = require(script.ReplicaServer)
+	Replica.default = require(script.ReplicaServer)
+	return Replica
 else
 	local server = script:FindFirstChild("ReplicaServer")
 	if server then
 		server:Destroy()
 	end
 
-	return require(script.ReplicaClient)
+	local Replica = require(script.ReplicaClient)
+	Replica.default = require(script.ReplicaClient)
+
+	return Replica
 end

@@ -242,6 +242,7 @@ local Replica = {
 	ReadyPlayers = ReadyPlayers,
 	NewReadyPlayer = Signal.New(),
 	RemovingReadyPlayer = Signal.New(),
+	default = nil
 }
 Replica.__index = Replica
 
@@ -271,7 +272,7 @@ function Replica.Token(name: string)
 	return self
 end
 
-function Replica.New(params: { Token: typeof(ReplicaToken), Tags: {}?, Data: {}?, WriteLib: ModuleScript? }): Replica
+function Replica.new(params: { Token: typeof(ReplicaToken), Tags: {}?, Data: {}?, WriteLib: ModuleScript? }): Replica
 	local token = params.Token
 	local tags = params.Tags or {}
 	local data = params.Data or {}
