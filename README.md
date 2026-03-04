@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">replica (loleris-replica)</h1>
+  <h1 align="center">replica (loleris-replica <a href="https://www.npmjs.com/package/@rbxts/loleris-replica"><img src="https://cdn.jsdelivr.net/gh/roblox-ts/roblox-ts.com/static/img/roblox-ts.svg" width="32" height="32" style="vertical-align: middle; filter: invert(1);"></a>)</h1>
   <p align="center">
     Roblox server to client state replication solution which lets the developer subscribe certain players to certain states
     <br />
